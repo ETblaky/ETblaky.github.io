@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+</head>
+<body>
+
+<div style="text-align:center;">
+    <input type="text" id="songIn" style="width:500px; display:inline-block; text-align:center;">
+    <button onclick="search()" style="width:50px; display:inline-block; text-align:center;">Go</button>
+
+    <div id='letra' style='width:100%; text-align:center'>
+        <pre class=text>Fetching lyrics... <img src="http://www.vagalume.com.br/images/processing.gif"></pre>
+    </div>
+</div>
+
+<script>
+
+    var words = [
+      "caralho", "porra", "cú", "foda", "foda-se", "vagabunda", "puta", "puto",
+      "rebolar", "quicar", "bumbum", "mexendo", "mexo", "mexe", "bunda", "sentar", "rabiola", "rabo", "potranca", "sarrar", "sarrada",
+      "novinha", "jogando", "popo", "popozito", "transa", "beber", "fumar", "maconha", "drogas", "mozão", "pau", "batendo", "taca", "chapado",
+      "bebendo", "bebida", "xoxota", "chupa", "merda", "sexo"
+    ];
+
+    function highlight(txt){
+        var final_txt = txt;
+        words.forEach(function(item, index) {
+            if(final_txt.toLowerCase().includes(item)){
+                console.log("yes - " + item);
+                final_txt = final_txt.replace(item, "<div style='background-color: gold; display: inline-block;'>" + item + "</div>")
+            }
+        });
+        return final_txt;
+    }
+
+    function showLetra(data, art, mus, arrayid) {
+        if (!arrayid) arrayid = 0;
+        if (data.type === 'exact' || data.type === 'aprox') {
+            // Print lyrics text
+            $('#letra .text').html(highlight(data.mus[arrayid].text));
+            // Show buttons to open original and portuguese translation
+            if (data.mus[arrayid].translate) {
+                $('#letra .text').prepend('<input type=button value="Portuguese &raquo;" onClick="$(document).trigger(\'translate\')"><br/><br>');
+                $(document).one('translate', function () {
+                    $('#letra .text').html(highlight(data.mus[arrayid].translate[0].text));
+                    $('#letra .text').prepend('<input type=button value="&laquo; Original" onClick="$(document).trigger(\'original\')"><br/>');
+                    $(document).one('original', function () {
+                        showLetra(data, art, mus, arrayid);
+                    });
+                });
+            }
+            // If not exact match (ex: U2 / Beautiful)
+            if (data.type === 'aprox' && !$('#aprox').is('div')) {
+                $('#letra').prepend('<div id=aprox>We found something similar<br/><span class=songname>"' + data.mus[arrayid].name + '"</span></div>');
+                // If Vagalume found more than one possible matches
+                if (data.mus.length > 0) {
+                    var html = '<select class=songselect>';
+                    for (var i = 0; i < data.mus.length; i++) {
+                        html += '<option value="' + i + '"' + (i === arrayid ? ' selected' : '') + '>' + data.mus[i].name + '</option>';
+                    }
+                    html += '</select>';
+                    $('#aprox').find('span.songname').html(html);
+                    $('#aprox').find('select.songselect').change(function () {
+                        var aID = $('option:selected', this).val();
+                        showLetra(data, art, mus, aID);
+                    });
+                }
+            }
+        } else if (data.type === 'song_notfound') {
+            // Song not found, but artist was found
+            // You can list all songs from Vagalume here
+            $('#letra .text').html(
+                'Song "' + mus + '" from "' + art + '" was not found.<br/>'
+                + '<a target=_blank href="http://www.vagalume.com.br/add/lyrics.php">'
+                + 'Add this song to Vagalume &raquo;</a>'
+            );
+        } else {
+            // Artist not found
+            $('#letra').find('.text').html(
+                'Song "' + mus + '" from "' + art + '" was not found<br/>'
+                + '(artist not found)<br/>'
+                + '<a target=_blank href="http://www.vagalume.com.br/add/lyrics.php">'
+                + 'Add this song to Vagalume &raquo;</a>'
+            );
+        }
+    }
+
+    function fetchLetra(art, mus) {
+        var data = jQuery.data(document, art + mus); // cache read
+        if (data) {
+            showLetra(data, art, mus);
+            return true;
+        }
+        var url = "http://api.vagalume.com.br/search.php"
+            + "?art=" + encodeURIComponent(art)
+            + "&mus=" + encodeURIComponent(mus);
+        // Check if browser supports CORS - http://www.w3.org/TR/cors/
+        if (!jQuery.support.cors) {
+            url += "&callback=?";
+        }
+        jQuery.getJSON(url, function (data) {
+            // What we do with the data
+            jQuery.data(document, art + mus, data); // cache write
+            showLetra(data, art, mus);
+        });
+    }
+
+    function search() {
+        var song = $('#songIn').val();
+        var url = "http://api.vagalume.com.br/search.excerpt" +
+            "?q=" + encodeURIComponent(song) +
+            "&limit=5";
+        jQuery.getJSON(url, function (data) {
+            //fetchLetra(data.response.docs[0].band, data.response.docs[0].title);
+            $('#letra .text').text("");
+            data.response.docs.forEach(function (item, index){
+                //$('#letra .text').prepend("<a onclick='fetchLetra(" + item.band + ", " + item.title + ")'>" + item.title + " - "  + item.band + "</a><br>");
+                $('#letra .text').append('<a onclick="fetchLetra(\'' + data.response.docs[verificar].band + '\', \'' + data.response.docs[verificar].title.replace("'", "\\'") + '\')">' + item.title + ' - '+ item.band + '</a><br>');
+            });
+        });
+    }
+
+    //search("Vai Malandra");
+</script>
+
+</body>
+</html>
