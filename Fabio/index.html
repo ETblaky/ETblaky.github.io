@@ -8,6 +8,8 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap-grid.min.css">
 
+    <link rel="shortcut icon" href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/237/birthday-cake_1f382.png" />
+
     <link rel='stylesheet' type='text/css' media='screen' href='style.css'>
     <script src='main.js'></script>
 </head>
@@ -392,6 +394,29 @@
             </div>
         </div>
 
+        <!-- Can’t Take My Eyes off You -->
+        <div class="row song">
+            <div class="col-lg second">
+                <div class="song-snipet"><iframe src="https://open.spotify.com/embed/track/34a6wCNRt95qBFFFgldBzy"
+                        width="300" height="300" frameborder="0" allowtransparency="true"
+                        allow="encrypted-media"></iframe>
+                </div>
+            </div>
+            <div class="col-lg first">
+                <div>
+                    <span class="emoji-1">😉</span>
+                    <span class="emoji-2">😉</span>
+                    <span class="emoji-3">😉</span>
+                </div>
+                <h2 class="date" style="background-color: #9C8596;">14 de Julho</h2>
+                <h2>Sixteen - Acoustic</h2>
+                <p>Antes de acabar, aqui uma música pra você:</p>
+                <p>O refrão é o melhor :)</p>
+                <p>Além disso, tinham 17 músicas antes dessa e esse é um numero feio</p>
+            </div>
+        </div>
+
+
     </div>
 
     <div class="footer">
@@ -400,8 +425,27 @@
         <h3>Brigado por ter dado uma chance pra mim, espero não estragar isso ❤️</h3>
         <h3>Feliz Aniversário binho, tomara que seja o primeiro de vários que eu posso estar junto :)</h3>
         <p>Tiago</p>
+
+        <br>
+        <div id="imagem">
+            <input type="button" value="Clica aqui" onclick="showImage();" />
+            <div id="gostosa" style="display: none;" >
+                <img src="bum.png"/>
+                <h3>GOSTOSAA 😍😍🤩😍🥰</h3>
+            </div>
+        </div>
+
     </div>
 
 </body>
+
+<script>
+    var is_visible = false;
+
+    function showImage() {
+        document.getElementById('gostosa').style.display = is_visible ? 'none' : "block";
+        is_visible = !is_visible;
+    }
+</script>
 
 </html>
