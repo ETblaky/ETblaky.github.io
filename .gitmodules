@@ -1,3 +1,6 @@
 [submodule "A-Nerds-Birthday"]
 	path = A-Nerds-Birthday
 	url = https://github.com/ETblaky/A-Nerds-Birthday.git
+[submodule "Notion-Widgets"]
+	path = Notion-Widgets
+	url = https://github.com/ETblaky/Notion-Widgets.git
